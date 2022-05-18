@@ -1,5 +1,5 @@
 # save as eg CodePaster.ps1
-# Author u/jimb2 2022-05-18 
+# Author u/jimb2 2022-05-18 11:24
 $code = @'
 [DllImport("user32.dll")]
 public static extern IntPtr GetForegroundWindow();
@@ -14,7 +14,7 @@ Add-Type -AssemblyName System.Windows.Forms
 '1.  Run this script (you have done this!)'
 '2.  Start Reddit post with a codeblock'
 '3.  Copy code to clipboard'
-'4.  Press enter to continue'
+'4.  Press Enter to continue'
 '5.  Click in Reddit code block'
 ''
 
@@ -25,15 +25,26 @@ Read-Host 'Press Enter when the text (code) is in the clipboard'
 do {
     Start-Sleep 1
     Write-Host '.' -NoNewline
-  } until ( $hwnd0 -ne [Win32.Utils]::GetForegroundWindow() )
+} until ( $hwnd0 -ne [Win32.Utils]::GetForegroundWindow() )
 
 $text = Get-Clipboard
 
-foreach ( $t in $text ) {
-    foreach( $c in ( '+^%~(){}'.split('') ) ) {
-        $t = $t.Replace( $c, "{$c}") 
+$escapes = '+^%~(){}[]'.ToCharArray()  # These get wrapped in {} 
+
+foreach ( $line in $text ) {       
+    # escape carefully
+    $LineArray = $Line.ToCharArray()
+    $EscapedArray = foreach( $x in $LineArray ) {
+        if ( $escapes -contains $x ) {
+            '{' + $x + '}'
+        } else {
+            "$x"
+        }
     }
-    [System.Windows.Forms.SendKeys]::SendWait($t)
+    $EscapedLine = $EscapedArray -join ''
+
+    #$EscapedLine # show escaped line?
+    [System.Windows.Forms.SendKeys]::SendWait($EscapedLine)
     [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
     Start-Sleep -Milliseconds 100
 }
