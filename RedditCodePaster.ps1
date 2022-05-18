@@ -18,7 +18,7 @@ Add-Type -AssemblyName System.Windows.Forms
 '5.  Click in Reddit code block'
 ''
 
-$x = Read-Host 'Press Enter when the text (code) is in the clipboard'
+Read-Host 'Press Enter when the text (code) is in the clipboard'
 ''
 'Text will be typed when the window focus changes!'
 
@@ -30,8 +30,11 @@ do {
 $text = Get-Clipboard
 
 foreach ( $t in $text ) {
+    foreach( $c in ( '+^%~(){}'.split('') ) ) {
+        $t = $t.Replace( $c, "{$c}") 
+    }
     [System.Windows.Forms.SendKeys]::SendWait($t)
-    [System.Windows.Forms.SendKeys]::SendWait("`r")
+    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
     Start-Sleep -Milliseconds 100
 }
 '.done!'
