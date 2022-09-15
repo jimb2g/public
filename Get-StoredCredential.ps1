@@ -2,12 +2,13 @@ Function Get-StoredCredential {
     <#
     .SYNOPSIS
         Returns a named credential object belonging to the current user/computer
+        Naming allows multiple credentials to be stored for different purposes.
         If the saved credential is not found the user will br prompted and the credential stored
         Credentials are stored in the <userprofile>/secrets 
             
     .NOTES
         Name: Get-StoredCredential
-        Author: Jim Birch
+        Author: /u/jimb2
         DateCreated: 2022-03-23 
         
     .EXAMPLE
@@ -23,7 +24,8 @@ Function Get-StoredCredential {
     .EXAMPLE
         Get-StoredCredential 'AD' -NoCreate
         
-        Returns null if there is no saved credential 
+        Returns null if there is no saved credential
+        
     .EXAMPLE
         Get-StoredCredential 'AD' -Verbose
         
@@ -41,11 +43,8 @@ Function Get-StoredCredential {
         # NoCreate switch: do not create if saved credential not found 
         [Parameter(Mandatory=$false)]
         [switch]  $NoCreate
-        # ,
-        # # Verbose/Debug switch: report process 
-        # [Parameter(Mandatory=$false)]
-        # #[Alias( "Verbose" )]
-        # [switch]  $Debug
+        
+        # Verbose switch, standard switch
     )
 
     BEGIN {
@@ -78,7 +77,7 @@ Function Get-StoredCredential {
         } elseif ( $CredExists ) {
             # cred exist and not renewed
             Write-Verbose ".Loading credential"
-                    $cred = Import-CliXml -Path $CredPath
+            $cred = Import-CliXml -Path $CredPath
         } else {
             # cred does not exist and nocreate flag
             Write-Verbose ".Credential not found and NoCreate flag, return null!" 
